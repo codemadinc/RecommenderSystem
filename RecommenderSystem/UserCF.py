@@ -1,13 +1,13 @@
-# 代码说明：
-# 基于用户的协同过滤算法的具体实现
+# Code description:
+# Specific implementation of user-based collaborative filtering algorithm
 
 import math
 import numpy as np
 import pandas as pd
 
-# 借助pearson相关系数进行修正后的余弦相似度计算公式，计算两个用户之间的相似度
-# 记  sim(user1, user2) = sigma_xy /sqrt(sigma_x * sigma_y)
-# user1和user2都表示为[[节目名称,隐性评分], [节目名称,隐性评分]],如user1 = [['节目一', 3.2], ['节目四', 0.2], ['节目八', 6.5], ...]
+# Use the modified cosine similarity calculation formula with the Pearson correlation coefficient to calculate the similarity between two users
+# Remember sim(user1, user2) = sigma_xy /sqrt(sigma_x * sigma_y)
+# Both user1 and user2 are expressed as [[program name, implicit score], [program name, implicit score]], such as user1 = [['Program One', 3.2], ['Program Four', 0.2], [ 'Program 8', 6.5], ...]
 
 def calCosDistByPearson(user1, user2):
     x = 0.0
@@ -20,30 +20,30 @@ def calCosDistByPearson(user1, user2):
     for item in user1:
         x += item[1]
 
-    # user1对其看过的所有节目的平均评分
+    # user1’s average rating of all the shows he has watched
     average_x = x / len(user1)
 
     for item in user2:
         y += item[1]
 
-    # user2对其看过的所有节目的平均评分
+    # user2’s average rating of all the shows he has watched
     average_y = y / len(user2)
 
     for item1 in user1:
         for item2 in user2:
-            if item1[0] == item2[0]:  # 对user1和user2都共同看过的节目才考虑进去
+            if item1[0] == item2[0]: # Only programs that user1 and user2 have watched together will be considered.
                 sigma_xy += (item1[1] - average_x) * (item2[1] - average_y)
                 sigma_x += (item1[1] - average_x) * (item1[1] - average_x)
                 sigma_y += (item2[1] - average_y) * (item2[1] - average_y)
 
-    if sigma_x == 0.0 or sigma_y == 0.0:  # 若分母为0，相似度为0
+    if sigma_x == 0.0 or sigma_y == 0.0: # If the denominator is 0, the similarity is 0
         return 0
 
     return sigma_xy/math.sqrt(sigma_x * sigma_y)
 
 
-# 创建所有用户的观看信息（包含隐性评分信息）,“从用户到节目”
-# 格式例子：users_to_items = {用户一:[['节目一', 3.2], ['节目四', 0.2], ['节目八', 6.5]], 用户二: ... }
+# Create viewing information for all users (including implicit rating information), "from users to programs"
+# Format example: users_to_items = {User one: [['Program one', 3.2], ['Program four', 0.2], ['Program eight', 6.5]], User two: ... }
 def createUsersDict(df):
     
     (m, n) = df.shape
@@ -62,8 +62,8 @@ def createUsersDict(df):
 
     return users_to_items
 
-# 创建所有节目被哪些用户观看的字典，也就是创建“从节目到用户”的倒排表items_and_users
-# items_to_users = {节目一: [用户一, 用户三], 节目二: ... }
+# Create a dictionary of which users watch all programs, that is, create an inverted table items_and_users "from programs to users"
+# items_to_users = {Program 1: [User 1, User 3], Program 2: ... }
 def createItemsDict(df):
     
     (m, n) = df.shape
@@ -82,18 +82,18 @@ def createItemsDict(df):
     return items_to_users
 
 
-# 找出与用户user_name相关的所有用户（即邻居）并依照相似度排序
-# neighbors_distance = [[用户名, 相似度大小], [...], ...] = [['用户四', 0.78],[...], ...]
+# Find all users (i.e. neighbors) related to user user_name and sort them according to similarity
+# neighbors_distance = [[user name, similarity size], [...], ...] = [['user four', 0.78],[...], ...]
 def findSimilarUsers(users_dict, items_dict, user_name):
 
-    neighbors = []   # neighbors表示与该用户看过相同节目的所有用户
+    neighbors = [] # neighbors represents all users who have watched the same program as this user
 
     for items in users_dict[user_name]:
         for neighbor in items_dict[items[0]]:
             if neighbor != user_name and neighbor not in neighbors:
                 neighbors.append(neighbor)
 
-    # 计算该用户与其所有邻居的相似度并降序排序
+    # Calculate the similarity between the user and all its neighbors and sort them in descending order
     neighbors_distance = []
     for neighbor in neighbors:
         distance = calCosDistByPearson(users_dict[user_name], users_dict[neighbor])
@@ -104,76 +104,76 @@ def findSimilarUsers(users_dict, items_dict, user_name):
     return neighbors_distance
 
 
-# 基于用户的协同过滤算法
-# K为邻居个数，是一个重要参数，参数调优时使用
+# User-based collaborative filtering algorithm
+# K is the number of neighbors, which is an important parameter and is used when tuning parameters.
 def userCF(user_name, users_dict, items_dict, K, all_items_names_to_be_recommend):
 
-    # recommend_items = {节目名：某个看过该节目的该用户user_name的邻居与该用户的相似度, ...}
+    # recommend_items = {Program name: the similarity between a neighbor of the user user_name who has watched the program and the user, ...}
     recommend_items = {}
-    # 将上面的recommend_items转换成列表形式并排序为recommend_items_sorted = [[节目一, 该用户对节目一的感兴趣程度],[...], ...]
+    # Convert the above recommended_items into a list and sort them as recommended_items_sorted = [[Program One, the user's level of interest in Program One],[...], ...]
     recommend_items_sorted = []
 
-    # 用户user_name看过的节目
+    # Programs watched by user user_name
     items_user_saw = []
     for item in users_dict[user_name]:
         items_user_saw.append(item[0])
 
-    # 找出与该用户相似度最大的K个用户(邻居)
+    # Find the K users (neighbors) with the greatest similarity to the user
     similar_users = findSimilarUsers(users_dict, items_dict, user_name)
     if len(similar_users) < K:
         k_similar_user = similar_users
     else:
         k_similar_user = similar_users[:K]
 
-    # 得出对该用户的推荐节目集
+    # Get the recommended program collection for the user
     for user in k_similar_user:
         for item in users_dict[user[0]]:
-            # 该用户user_name没有看过的节目才添加进来，才可以推荐给该用户
+            # Only programs that the user user_name has not watched are added and can be recommended to the user.
             if item[0] not in items_user_saw:
-                # 而且该节目必须是在备选推荐节目集中
+                # And the program must be in the alternative recommended program set
                 if item[0] in all_items_names_to_be_recommend:
                     if item[0] not in recommend_items:
-                        # recommend_items是一个字典。第一次迭代中，表示将第一个邻居用户与该用户的相似度加到节目名上，后续迭代如果有其他邻居用户也看过该节目，
-                        # 也将其与该用户的相似度加到节目名上，迭代的结果就是该用户对该节目的感兴趣程度
+                        # recommend_items is a dictionary. In the first iteration, it means adding the similarity between the first neighbor user and the user to the program name. In subsequent iterations, if other neighbor users have also watched the program,
+                        # Also add the similarity to the user to the program name. The result of the iteration is the user's interest in the program.
                         recommend_items[item[0]] = user[1]
 
                     else:
-                        # 如果某个节目有k个邻居用户看过，则将这k个邻居用户与该用户的相似度相加，得到该用户对某个节目的感兴趣程度
+                        # If a program has been watched by k neighbor users, add the similarities between the k neighbor users and the user to get the user's level of interest in a certain program.
                         recommend_items[item[0]] += user[1]
 
     for key in recommend_items:
         recommend_items_sorted.append([key, recommend_items[key]])
 
-    # 对推荐节目集按用户感兴趣程度降序排序
+    # Sort recommended program collections in descending order by user interest
     recommend_items_sorted.sort(key=lambda item: item[1], reverse=True)
 
     return recommend_items_sorted
 
-# 输出推荐给该用户的节目列表
-# max_num:最多输出的推荐节目数
+# Output the list of programs recommended to the user
+# max_num: The maximum number of recommended programs output
 def printRecommendItems(recommend_items_sorted, max_num):
     count = 0
     for item, degree in recommend_items_sorted:
-        print("节目名：%s， 推荐指数：%f" % (item, degree))
+        print("Program name: %s, recommendation index: %f" % (item, degree))
         count += 1
         if count == max_num:
             break
 
-# 主程序
+# Main program
 if __name__ == '__main__':
 
     all_users_names = ['A', 'B', 'C']
 
-    df1 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
+    df1 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
     (m1, n1) = df1.shape
-    # 按照"备选推荐节目集及所属类型01矩阵"的列序排列的所有用户观看过的节目名称
+    # Names of programs watched by all users arranged in the order of "Alternative Recommended Program Sets and Type 01 Matrix"
     items_to_be_recommended_names = np.array(df1.iloc[:m1 + 1, 0]).tolist()
 
-    df2 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户对其看过的节目的评分矩阵.xlsx")
+    df2 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户对其看过的节目的评分矩阵.xlsx")
 
-    # users_dict = {用户一:[['节目一', 3.2], ['节目四', 0.2], ['节目八', 6.5]], 用户二: ... }
+    # users_dict = {User one: [['Program one', 3.2], ['Program four', 0.2], ['Program eight', 6.5]], User two: ... }
     users_dict = createUsersDict(df2)
-    # items_dict = {节目一: [用户一, 用户三], 节目二: [...], ... }
+    # items_dict = {Program 1: [User 1, User 3], Program 2: [...], ... }
     items_dict = createItemsDict(df2)
 
     for user in all_users_names:
