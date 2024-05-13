@@ -19,7 +19,7 @@ if __name__ == '__main__':
                   '少儿教育', '少儿', '综艺', '古装', '搞笑', '广告']
     labels_num = len(all_labels)
 
-    df1 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户对其看过的节目的评分矩阵.xlsx")
+    df1 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Rating matrix of all users for the programs they have watched.xlsx")
     (m1, n1) = df1.shape
     # 所有用户对其看过的节目的评分矩阵
     # data_array1 = [[0.1804 0.042 0.11  0.07  0.19  0.56  0.14  0.3  0.32 0, ...], [...]]
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # items_dict = {节目一: [用户一, 用户三], 节目二: [...], ... }
     items_dict = createItemsDict(df1)
 
-    df2 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户看过的节目及所属类型的01矩阵.xlsx")
+    df2 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\01 matrix of all programs watched by users and their categories.xlsx")
     (m2, n2) = df2.shape
     data_array2 = np.array(df2.iloc[:m2 + 1, 1:])
     # 按照"所有用户看过的节目及所属类型的01矩阵"的列序排列的所有用户观看过的节目名称
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     (users_profiles, items_users_saw) = createUsersProfiles(data_array1, all_users_names, items_users_saw_names1,
                                                             all_labels, items_users_saw_profiles)
 
-    df3 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
+    df3 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Alternative recommended program collection and type 01 matrix.xlsx")
     (m3, n3) = df3.shape
     data_array3 = np.array(df3.iloc[:m3 + 1, 1:])
     # 按照"备选推荐节目集及所属类型01矩阵"的列序排列的所有用户观看过的节目名称

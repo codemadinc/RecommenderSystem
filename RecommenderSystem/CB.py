@@ -165,38 +165,37 @@ if __name__ == '__main__':
     all_users_names = ['A', 'B', 'C']
     #all_labels = ['教育', '戏曲', '悬疑', '科幻', '惊悚', '动作', '资讯', '武侠', '剧情', '警匪', '生活', '军事', '言情', '体育', '冒险', '纪实',
     #              '少儿教育', '少儿', '综艺', '古装', '搞笑', '广告']
-    all_labels = ['Education', 'Drama', 'Suspense', 'Science Fiction', 'Thriller', 'Action', 'Information', 'Martial Arts', 'Drama', 'Police', 'Life', 'Military ', 'Romance', 'Sports', 'Adventure', 'Documentary',
-                  'Childrens education', 'Children', 'Variety show', 'Costume', 'Funny', 'Advertisement']
+    all_labels = ['education', 'drama', 'suspense', 'sci-fi', 'thriller', 'action', 'information', 'martialarts', 'drama', 'police', 'life', 'military', 'romance', 'sports', 'adventure', 'documentary', 'children education', 'kids', 'varietyshow', 'costume', 'plot', 'funny', 'advertisement', 'comedy', 'physical', 'lanka', 'india']
     labels_num = len(all_labels)
 
-    df1 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户对其看过的节目的评分矩阵.xlsx")
+    df1 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Rating matrix of all users for the programs they have watched.xlsx")
     (m1, n1) = df1.shape
-    # 所有用户对其看过的节目的评分矩阵
+    # Rating matrix of all users’ programs they have watched
     # data_array1 = [[0.1804 0.042 0.11  0.07  0.19  0.56  0.14  0.3  0.32 0, ...], [...]]
     data_array1 = np.array(df1.iloc[:m1 + 1, 1:])
-    # 按照"所有用户对其看过的节目的评分矩阵"的列序排列的所有用户观看过的节目名称
+    # Names of programs watched by all users arranged in column order of "Rating matrix of programs watched by all users"
     items_users_saw_names1 = df1.columns[1:].tolist()
 
 
-    df2 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户看过的节目及所属类型的01矩阵.xlsx")
+    df2 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\01 matrix of all programs watched by users and their categories.xlsx")
     (m2, n2) = df2.shape
     data_array2 = np.array(df2.iloc[:m2 + 1, 1:])
-    # 按照"所有用户看过的节目及所属类型的01矩阵"的列序排列的所有用户观看过的节目名称
+    # Names of programs watched by all users arranged in the order of "01 matrix of programs watched by all users and their types"
     items_users_saw_names2 = np.array(df2.iloc[:m2 + 1, 0]).tolist()
 
-    # 为用户看过的节目建立节目画像
+    # Create program portraits for the programs the user has watched
     items_users_saw_profiles = createItemsProfiles(data_array2, all_labels, items_users_saw_names2)
 
-    # 建立用户画像users_profiles和用户看过的节目集items_users_saw
+    # Create user portraits users_profiles and the program collection items_users_saw that the user has watched
     (users_profiles, items_users_saw) = createUsersProfiles(data_array1, all_users_names, items_users_saw_names1, all_labels, items_users_saw_profiles)
 
-    df3 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
+    df3 = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Alternative recommended program collection and type 01 matrix.xlsx")
     (m3, n3) = df3.shape
     data_array3 = np.array(df3.iloc[:m3 + 1, 1:])
-    # 按照"备选推荐节目集及所属类型01矩阵"的列序排列的所有用户观看过的节目名称
+    # Names of programs watched by all users arranged in the order of "Alternative Recommended Program Sets and Type 01 Matrix"
     items_to_be_recommended_names = np.array(df3.iloc[:m3 + 1, 0]).tolist()
 
-    # 为备选推荐节目集建立节目画像
+    # Create program portraits for alternative recommended program sets
     items_to_be_recommended_profiles = createItemsProfiles(data_array3, all_labels, items_to_be_recommended_names)
 
     for user in all_users_names:

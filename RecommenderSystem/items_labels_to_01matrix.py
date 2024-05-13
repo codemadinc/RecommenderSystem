@@ -1,45 +1,45 @@
-# 代码说明：
-# 根据"D:\Recommender Systems\备选推荐节目集及所属类型.xlsx"生成"D:\Recommender Systems\备选推荐节目集及所属类型01矩阵.xlsx"
+# Code description:
+# Generate "D:\Recommender Systems\Alternate recommended program collections and their types.xlsx" based on "D:\Recommender Systems\Alternate recommended program collections and their types.xlsx"
 
 import pandas as pd
 import numpy as np
 
 if __name__ == '__main__':
 
-    df = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型.xlsx")
+    df = pd.read_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Alternative recommended program collections and their categories.xlsx")
     (m, n) = df.shape
 
     data_array = np.array(df.iloc[0:m+1,:])
     print(data_array)
 
-    # 按指定顺序排列的所有标签
-    all_labels = ['教育', '戏曲', '悬疑', '科幻', '惊悚', '动作', '资讯', '武侠', '剧情', '警匪', '生活', '军事', '言情', '体育', '冒险', '纪实', '少儿教育', '少儿', '综艺', '古装', '搞笑', '广告']
+    # All tags in the specified order
+    all_labels = ['education', 'drama', 'suspense', 'sci-fi', 'thriller', 'action', 'information', 'martialarts', 'drama', 'police', 'life', 'military', 'romance', 'sports', 'adventure', 'documentary', 'children education', 'kids', 'varietyshow', 'costume', 'plot', 'funny', 'advertisement', 'comedy', 'physical', 'lanka', 'india']
     labels_num = len(all_labels)
 
-    # 按顺序提取所有节目的名称
+    # Extract the names of all programs in order
     all_items_names = np.array(df.iloc[:m+1, 0])
     print(all_items_names)
 
-    # 创建一个01矩阵，0表示该节目不属于该类型，1表示该节目属于该类型
+    #Create a 01 matrix, 0 means that the program does not belong to this type, 1 means that the program belongs to this type
     data_to_be_written = []
 
     for i in range(len(all_items_names)):
 
-        # 每个节目的01行向量
+        #01 row vector for each program
         vector = [0] * labels_num
         labels_names = str(data_array[i][1]).split(" ")
 
         for j in range(len(labels_names)):
-            location = all_labels.index(labels_names[j])
+            location = all_labels.index(labels_names[j].lower())
             vector[location] = 1
 
         data_to_be_written.append(vector)
 
-    # 将01矩阵写入“备选推荐节目集及所属类型01矩阵”
+    # Write the 01 matrix into the "alternative recommended program collection and type 01 matrix"
     df = pd.DataFrame(data_to_be_written, index=all_items_names, columns=all_labels)
-    df.to_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
+    df.to_excel(r"C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\Alternative recommended program collection and type 01 matrix.xlsx")
 
-    # PS: 记得在生成的“备选推荐节目集及所属类型01矩阵表”中节目名那一列的首个空白的单元格中打上“节目名”
+    # PS: Remember to type "Program Name" in the first blank cell of the program name column in the generated "Alternate Recommended Program Sets and Type 01 Matrix Table"
 
 
 
