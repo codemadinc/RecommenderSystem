@@ -6,7 +6,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    df = pd.read_excel("D:\Recommender Systems\备选推荐节目集及所属类型.xlsx")
+    df = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型.xlsx")
     (m, n) = df.shape
 
     data_array = np.array(df.iloc[0:m+1,:])
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # 将01矩阵写入“备选推荐节目集及所属类型01矩阵”
     df = pd.DataFrame(data_to_be_written, index=all_items_names, columns=all_labels)
-    df.to_excel("D:\Recommender Systems\备选推荐节目集及所属类型01矩阵.xlsx")
+    df.to_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
 
     # PS: 记得在生成的“备选推荐节目集及所属类型01矩阵表”中节目名那一列的首个空白的单元格中打上“节目名”
 

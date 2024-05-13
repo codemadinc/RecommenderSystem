@@ -164,12 +164,12 @@ if __name__ == '__main__':
 
     all_users_names = ['A', 'B', 'C']
 
-    df1 = pd.read_excel("D:\Recommender Systems\备选推荐节目集及所属类型01矩阵.xlsx")
+    df1 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\备选推荐节目集及所属类型01矩阵.xlsx")
     (m1, n1) = df1.shape
     # 按照"备选推荐节目集及所属类型01矩阵"的列序排列的所有用户观看过的节目名称
     items_to_be_recommended_names = np.array(df1.iloc[:m1 + 1, 0]).tolist()
 
-    df2 = pd.read_excel("D:\Recommender Systems\所有用户对其看过的节目的评分矩阵.xlsx")
+    df2 = pd.read_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户对其看过的节目的评分矩阵.xlsx")
 
     # users_dict = {用户一:[['节目一', 3.2], ['节目四', 0.2], ['节目八', 6.5]], 用户二: ... }
     users_dict = createUsersDict(df2)

@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     for j in range(len(all_users_names)):
 
-        fileToBeRead = "D:\Recommender Systems\用户" + all_users_names[j] + "对于其三个月来所看过节目的评分.xls"
+        fileToBeRead = "C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\用户" + all_users_names[j] + "对于其三个月来所看过节目的评分.xls"
         df = pd.read_excel(fileToBeRead)
         (m, n) = df.shape
         data_array = np.array(df)
@@ -43,6 +43,6 @@ if __name__ == '__main__':
         all_items_labels_01_vectors.append(vector)
 
     df = pd.DataFrame(all_items_labels_01_vectors, index=all_items_users_saw, columns=all_labels)
-    df.to_excel("D:\Recommender Systems\所有用户看过的节目及所属类型的01矩阵.xlsx")
+    df.to_excel("C:\Users\CodeMad\Documents\GitHub\RecommenderSystem\data\所有用户看过的节目及所属类型的01矩阵.xlsx")
 
     # PS: 记得在生成的“所有用户看过的节目及所属类型的01矩阵表”中节目名那一列的首个空白的单元格中打上“节目名”
